@@ -1,0 +1,53 @@
+{% extends "blog/base.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="list-group-item">
+    <h2>{{ post.title }}</h2>
+    <small> By {{ post.author }} on {{ post.created_at }}</small>
+    <p>{{ post.content }}</p>
+
+    {% if is_liked %}
+    <a type="button" class="btn btn-primary" href="{% url 'like_post' post.id %}">
+        Liked </a>
+    {% else %}
+    <a type="button" class="btn btn-primary" href="{% url 'like_post' post.id %}">
+        Like </a>
+    {% endif %}
+
+    <span class="badge text-bg-success">Likes: {{ post.like_count }}</span>
+    
+    <span class="badge text-bg-info">Views: {{ post.view_count }}</span>
+    
+    
+    {% if user == post.author %}
+    <a href="{% url 'post_update' post.id %}">Edit</a>
+    <a href="{% url 'post_delete' post.id %}">Delete</a>
+    {% endif %}
+</div>
+
+<h2>Comments</h2>
+{% if user.is_authenticated %}
+<form method="post">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button class="btn btn-primary" type="submit">Add Comment</button>
+</form>
+{% else %}
+    <p>You need to be logged in to comment.</p>
+{% endif %}
+<br>
+<div class="container">
+   {% for comments in comment %}
+        <div class="card">
+            <div class="card-body">
+            <h5 class="card-title">{{ comments.author }}</h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">{{comments.created_at}}</h6>
+            <p class="card-text">{{ comments.content }}</p>
+            <a href="#" class="card-link">Card link</a>
+            <a href="#" class="card-link">Another link</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
